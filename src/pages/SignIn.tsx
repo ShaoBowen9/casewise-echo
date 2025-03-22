@@ -7,26 +7,39 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
-type FormData = {
-  email: string;
-  password: string;
-};
+const formSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const auth = getAuth();
+  
   const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    // Here you would implement the actual Firebase signin
-    console.log("Sign in data:", data);
-    toast.success("Signed in successfully!");
-    navigate("/");
+  const onSubmit = async (data: FormData) => {
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      console.log("Sign in data:", data);
+      toast.success("Signed in successfully!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error signing in:", error);
+      toast.error("Failed to sign in. Please check your credentials.");
+    }
   };
 
   return (
