@@ -11,6 +11,9 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import News from "./pages/News";
 import History from "./pages/History";
+import Landing from "./pages/Landing";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +24,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/dashboard" element={<Index />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
           <Route path="/case/:id" element={<CaseDetail />} />
           <Route path="/create-case" element={<CreateCase />} />
           <Route path="/settings" element={<Settings />} />
