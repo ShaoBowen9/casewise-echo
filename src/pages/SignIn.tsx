@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { auth } from "@/lib/firebase"; // Import auth from our firebase.ts file
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -20,7 +21,6 @@ type FormData = z.infer<typeof formSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const auth = getAuth();
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
