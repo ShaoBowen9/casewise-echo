@@ -3,9 +3,12 @@ import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useNavigate } from "react-router-dom";
+import { AICaseAssistant } from "@/components/cases/AICaseAssistant";
+import { useToast } from "@/components/ui/use-toast";
 
 const CreateCase = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -35,22 +38,26 @@ const CreateCase = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
+    // Simulate API call and updating the cases list
     setTimeout(() => {
       setIsSubmitting(false);
+      toast({
+        title: "Case Created",
+        description: "Your new case has been successfully created and added to the cases list.",
+      });
       navigate("/");
     }, 2000);
   };
   
   const categories = [
-    "Water Pollution",
-    "Air Quality",
-    "Deforestation",
-    "Ocean Conservation",
-    "Climate Policy",
-    "Wildlife Protection",
-    "Waste Management",
+    "Greenhouse Gas Emissions",
+    "Carbon Capture",
     "Renewable Energy",
+    "Climate Policy",
+    "Ocean Acidification",
+    "Arctic Ice Melt",
+    "Rising Sea Levels",
+    "Extreme Weather Events",
   ];
   
   const availableResources = [
@@ -82,12 +89,14 @@ const CreateCase = () => {
       
       <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto max-w-3xl py-8 px-6">
-          <header className="mb-8">
+          <header className="mb-4">
             <h1 className="text-3xl font-bold tracking-tight">Create a Case</h1>
             <p className="mt-2 text-muted-foreground">
-              Provide details about the environmental issue you want to address
+              Provide details about the climate issue you want to address
             </p>
           </header>
+          
+          <AICaseAssistant />
           
           <form onSubmit={handleSubmit} className="space-y-8 animate-fade-in">
             <div className="glass-surface rounded-xl p-6">
@@ -122,7 +131,7 @@ const CreateCase = () => {
                     required
                     rows={4}
                     className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Describe the environmental issue in detail"
+                    placeholder="Describe the climate issue in detail"
                   />
                 </div>
                 

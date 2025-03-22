@@ -2,18 +2,22 @@
 import { useParams, Link } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ChatInterface } from "@/components/chat/ChatInterface";
-import { ArrowLeft, Users, Calendar, MapPin, AlertCircle } from "lucide-react";
+import { ArrowLeft, Users, Calendar, MapPin, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
 
 const CaseDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const [detailsCollapsed, setDetailsCollapsed] = useState(false);
   
   // This would be fetched from an API in a real application
   const caseDetails = {
     id: id || "unknown",
-    title: "Illegal Chemical Dumping in Biscayne Bay",
-    description: "Reports of industrial waste being dumped in protected waters during nighttime operations. Satellite imagery shows discoloration patterns consistent with chemical pollution. Local marine life appears to be affected with unusual mortality rates among certain species. Gathering evidence and coordinating with local authorities is the priority for this case.",
-    category: "Water Pollution",
-    location: "Biscayne Bay, Florida",
+    title: "Methane Leaks in Natural Gas Infrastructure",
+    description: "Satellite imagery has detected anomalous methane emissions in a major natural gas pipeline network. Data shows consistent leakage patterns over the past three months, with emission rates far exceeding regulatory limits. These leaks are contributing significantly to short-term climate forcing effects. Local temperature records show unusual warming patterns that correlate with the detected emissions.",
+    category: "Greenhouse Gas Emissions",
+    location: "Northern Colorado Gas Basin",
     dateReported: "May 15, 2023",
     status: "Active",
     participants: 12,
@@ -63,43 +67,55 @@ const CaseDetail = () => {
         
         <div className="flex-1 overflow-hidden grid grid-cols-[2fr,1fr]">
           <div className="border-r overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold mb-3">Case Details</h2>
-              <p className="text-sm text-card-foreground/80 leading-relaxed">
-                {caseDetails.description}
-              </p>
+            <Collapsible
+              open={!detailsCollapsed}
+              onOpenChange={(open) => setDetailsCollapsed(!open)}
+            >
+              <div className="p-4 border-b flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Case Details</h2>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    {detailsCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
               
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-3">Evidence</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg border bg-card p-4 shadow-sm">
-                    <h4 className="font-medium mb-2">Satellite Images</h4>
-                    <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground">Satellite imagery</span>
-                    </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Shows patterns of chemical dispersion
-                    </p>
-                  </div>
+              <CollapsibleContent>
+                <div className="p-6">
+                  <p className="text-sm text-card-foreground/80 leading-relaxed">
+                    {caseDetails.description}
+                  </p>
                   
-                  <div className="rounded-lg border bg-card p-4 shadow-sm">
-                    <h4 className="font-medium mb-2">Water Samples</h4>
-                    <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground">Test results</span>
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-3">Evidence</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-lg border bg-card p-4 shadow-sm">
+                        <h4 className="font-medium mb-2">Satellite Methane Detection</h4>
+                        <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">Methane emissions imagery</span>
+                        </div>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Shows patterns of methane dispersal from pipeline infrastructure
+                        </p>
+                      </div>
+                      
+                      <div className="rounded-lg border bg-card p-4 shadow-sm">
+                        <h4 className="font-medium mb-2">Emissions Data</h4>
+                        <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">Emissions analysis</span>
+                        </div>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Quantitative analysis confirms greenhouse gas emission rates
+                        </p>
+                      </div>
                     </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Chemical analysis confirms industrial waste
-                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
           
           <div className="overflow-hidden flex flex-col">
-            <div className="border-b p-3">
-              <h2 className="font-semibold">Case Discussion</h2>
-            </div>
             <ChatInterface caseId={caseDetails.id} />
           </div>
         </div>

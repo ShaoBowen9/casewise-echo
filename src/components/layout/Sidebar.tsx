@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, ChevronRight, LayoutGrid, History, Settings, LogOut, Plus } from "lucide-react";
+import { ChevronDown, ChevronRight, LayoutGrid, History, Settings, LogOut, Plus, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type MenuItemType = {
@@ -21,6 +21,11 @@ const menuItems: MenuItemType[] = [
         icon: LayoutGrid,
         label: "Cases",
         path: "/",
+      },
+      {
+        icon: Newspaper,
+        label: "News",
+        path: "/news",
       },
       {
         icon: History,

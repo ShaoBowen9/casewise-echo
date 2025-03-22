@@ -9,6 +9,8 @@ import CaseDetail from "./pages/CaseDetail";
 import CreateCase from "./pages/CreateCase";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import News from "./pages/News";
+import History from "./pages/History";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,8 @@ const App = () => (
           <Route path="/case/:id" element={<CaseDetail />} />
           <Route path="/create-case" element={<CreateCase />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/history" element={<History />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
