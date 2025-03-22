@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,9 @@ import { toast } from "sonner";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { auth } from "@/lib/firebase"; // Import auth from our firebase.ts file
+import { auth } from "@/lib/firebase";
+import { Shield, LockKeyhole, Mail, ArrowRight } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -21,6 +23,7 @@ type FormData = z.infer<typeof formSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -31,70 +34,125 @@ const SignIn = () => {
   });
 
   const onSubmit = async (data: FormData) => {
+    setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      console.log("Sign in data:", data);
+      console.log("Sign in successful");
       toast.success("Signed in successfully!");
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing in:", error);
-      toast.error("Failed to sign in. Please check your credentials.");
+      
+      // Handle specific Firebase error codes
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        toast.error("Invalid email or password");
+      } else if (error.code === 'auth/too-many-requests') {
+        toast.error("Too many failed login attempts. Please try again later");
+      } else {
+        toast.error("Failed to sign in. Please check your credentials.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="john.doe@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit" className="w-full">Sign In</Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-muted-foreground text-center">
-            Don't have an account?{" "}
-            <Link to="/sign-up" className="text-primary underline-offset-4 hover:underline">
-              Sign Up
-            </Link>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-slate-900 to-slate-800">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-10 -right-10 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-10 left-1/4 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center">
+            <Shield className="h-12 w-12 text-blue-400" />
           </div>
-        </CardFooter>
-      </Card>
+          <h1 className="text-3xl font-bold text-white mt-4">ECHO</h1>
+          <p className="text-slate-400 mt-2">Exposing Corporate Harmful Operations</p>
+        </div>
+        
+        <Card className="w-full border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-white">Sign in</CardTitle>
+            <CardDescription className="text-slate-400">
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-200">Email</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                          <Input 
+                            type="email" 
+                            placeholder="john.doe@example.com" 
+                            className="bg-slate-700/50 border-slate-600 text-white pl-10" 
+                            {...field} 
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-200">Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            className="bg-slate-700/50 border-slate-600 text-white pl-10" 
+                            {...field} 
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <LoadingSpinner size="sm" className="border-white" />
+                  ) : (
+                    <>
+                      Sign In <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4 border-t border-slate-700/50 pt-6">
+            <div className="text-sm text-slate-400 text-center">
+              Don't have an account?{" "}
+              <Link to="/sign-up" className="text-blue-400 underline-offset-4 hover:underline">
+                Sign Up
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };
